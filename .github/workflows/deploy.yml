@@ -23,7 +23,7 @@ jobs:
 
       - name: Create package
         run: |
-          tar -czf dist.tar.gz dist Dockerfile nginx.conf
+          tar -czf deploy.tar.gz dist Dockerfile nginx.conf backend
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -36,14 +36,22 @@ jobs:
 
       - name: 'Transfer files to VM'
         run: |
-          gcloud compute scp dist.tar.gz ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_NAME }}:~/mdm-deploy/ --zone ${{ secrets.GCP_ZONE }}
+          gcloud compute scp deploy.tar.gz ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_NAME }}:~/mdm-deploy/ --zone ${{ secrets.GCP_ZONE }}
 
       - name: 'Deploy on VM'
         run: |
           gcloud compute ssh ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_NAME }} --zone ${{ secrets.GCP_ZONE }} --command "
             cd ~/mdm-deploy && \
-            tar -xzf dist.tar.gz && \
+            tar -xzf deploy.tar.gz && \
+            # Frontend
             sudo docker build -t mdm-cutover-planner . && \
             sudo docker rm -f mdm-planner || true && \
-            sudo docker run -d --name mdm-planner -p 3100:80 --restart always mdm-cutover-planner
+            sudo docker run -d --name mdm-planner --network esg-ai_default -p 3100:80 --restart always mdm-cutover-planner && \
+            # Backend
+            cd backend && \
+            sudo docker build -t mdm-planner-backend . && \
+            sudo docker rm -f mdm-planner-backend || true && \
+            sudo docker run -d --name mdm-planner-backend --network esg-ai_default -p 8081:8081 \
+              -e DATABASE_URL=postgresql://postgres@esg_ai_postgres:5432/ProjectPlanner \
+              --restart always mdm-planner-backend
           "

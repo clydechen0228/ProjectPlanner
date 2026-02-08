@@ -63,7 +63,7 @@ export interface AISettings {
 export const DEFAULT_SETTINGS: AISettings = {
   provider: 'qwen',
   geminiApiKey: '',
-  qwenApiKey: '4pYBwcozFxUQonfh',
+  qwenApiKey: '', // User must provide their own key
   qwenEndpoint: 'https://aigateway.aliyun.pwccn.com.cn/v1/chat/completions',
   modelName: 'qwen3-32b'
 };
