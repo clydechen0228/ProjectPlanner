@@ -1,0 +1,5 @@
+{
+  "name": "MDM Cutover Planner",
+  "description": "A professional Gantt chart and task management tool for system cutovers, featuring IndexedDB persistence and inline editing.",
+  "requestFramePermissions": []
+}
