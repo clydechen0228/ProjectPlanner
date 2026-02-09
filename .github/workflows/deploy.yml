@@ -52,6 +52,6 @@ jobs:
             sudo docker build -t mdm-planner-backend . && \
             sudo docker rm -f mdm-planner-backend || true && \
             sudo docker run -d --name mdm-planner-backend --network esg-ai_default -p 8081:8081 \
-              -e DATABASE_URL=postgresql://postgres@esg_ai_postgres:5432/ProjectPlanner \
+              -e DATABASE_URL=postgresql://postgres:Password12@esg_ai_postgres:5432/projectplanner \
               --restart always mdm-planner-backend
           "
