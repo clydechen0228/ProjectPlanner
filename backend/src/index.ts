@@ -33,9 +33,9 @@ app.get('/api/tasks', async (req, res) => {
             isExpanded: row.is_expanded
         }));
         res.json(tasks);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err: any) {
+        console.error('FETCH TASKS ERROR:', err.message, err.stack);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 
